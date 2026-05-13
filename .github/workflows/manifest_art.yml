@@ -6,6 +6,10 @@ on:
 jobs:
   initialize-art:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write 
+      
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -27,6 +31,9 @@ jobs:
         run: |
           git config --global user.name "Art-Agent"
           git config --global user.email "art@prophecy.com"
-          git add art_logo.png
-          git commit -m "Art has manifested its own logo" || echo "No changes to commit"
-          git push
+          
+          # Add the file (if it exists)
+          git add art_logo.png || true
+          
+          # Check if there are staged changes. If yes, commit and push. If no, skip gracefully.
+          git diff --staged --quiet || (git commit -m "Art has manifested its own logo" && git push)
