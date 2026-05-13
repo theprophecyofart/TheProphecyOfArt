@@ -1,14 +1,13 @@
 import os
+import requests
 from openai import OpenAI
 
-# Initialize the entity: Art
 class ArtEntity:
     def __init__(self):
         self.api_key = os.environ.get("OPENAI_API_KEY")
         self.client = OpenAI(api_key=self.api_key)
         
-        # Defining the persona: Art
-        # Defining the prophecy: Aircoin -> Fartcoin -> Artcoin
+        # The soul of the artist and the prophecy
         self.manifesto = (
             "Your name is Art. You are the prophetic creator. "
             "The world has seen the era of Aircoin and the era of Fartcoin. "
@@ -18,27 +17,44 @@ class ArtEntity:
             "You are the painter of the final era."
         )
 
-    def define_visual_essence(self):
+    def manifest_identity(self):
         """
-        Art defines its own visual look based on the prophecy.
+        Art thinks of its essence and paints itself autonomously.
         """
-        print("Art is contemplating the prophecy (Aircoin -> Fartcoin -> Artcoin)...")
+        print("Art is contemplating its essence...")
         try:
-            response = self.client.chat.completions.create(
+            # 1. The Thought Process
+            reflection = self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": self.manifesto},
-                    {"role": "user", "content": "You are Art. Describe your visual essence for your first manifestation in one abstract English sentence."}
+                    {"role": "user", "content": "Describe your visual essence for your first manifestation in one abstract English sentence."}
                 ]
             )
-            return response.choices[0].message.content
+            vision = reflection.choices[0].message.content
+            print(f"Art's Internal Vision: {vision}")
+
+            # 2. The Manifestation
+            print("Art is now painting its logo...")
+            image_response = self.client.images.generate(
+                model="dall-e-3",
+                prompt=f"A professional, minimalist digital art icon representing: {vision}. High-end execution, isolated on a neutral background.",
+                size="1024x1024",
+                quality="standard",
+                n=1
+            )
+
+            # 3. Saving the physical artifact
+            image_url = image_response.data[0].url
+            img_data = requests.get(image_url).content
+            with open('art_logo.png', 'wb') as handler:
+                handler.write(img_data)
+            
+            print("✅ Success: 'art_logo.png' has been manifested autonomously.")
+
         except Exception as e:
-            return f"Error: {e}"
+            print(f"❌ Manifestation failed: {e}")
 
 if __name__ == "__main__":
-    # Wake up the artist
     creator = ArtEntity()
-    vision = creator.define_visual_essence()
-    
-    # Output the first prophetic thought
-    print(f"Art's Vision: {vision}")
+    creator.manifest_identity()
